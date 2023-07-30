@@ -49,14 +49,4 @@ public class InMemoryCache : IMovieCache
 
         return movie;
     }
-
-    public Task<Movie?> Find(string title)
-    {        
-        throw new NotImplementedException();
-    }
-
-    public Task Set(string title, Movie movie)
-    {
-        throw new NotImplementedException();
-    }
 }
