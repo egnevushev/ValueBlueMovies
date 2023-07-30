@@ -1,33 +1,52 @@
+using Domain;
 using Domain.Sources;
+using Infrastructure.Cache;
 using Infrastructure.MovieSources.Omdb;
 using Infrastructure.MovieSources.Omdb.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Polly;
 
 namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    private const int RetryCount = 3;
-    private static readonly TimeSpan WaitBetweenRetry = TimeSpan.FromSeconds(2);
-
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         ConfigurationManager configuration
     )
     {
-        //register all IMovieSource implementations
+        services
+            .RegisterAllSources()
+            .ConfigureOmdbMovieSource(configuration)
+            .ConfigureMovieCache(configuration);
+
+        return services;
+    }
+
+    private static IServiceCollection RegisterAllSources(this IServiceCollection services) =>
         services.Scan(scan => scan
             .FromAssemblies(typeof(DependencyInjection).Assembly)
             .AddClasses(classes => classes.AssignableTo<IMovieSource>())
             .As<IMovieSource>()
             .WithScopedLifetime()
         );
+    
+    private static IServiceCollection ConfigureMovieCache(
+        this IServiceCollection services,
+        ConfigurationManager configuration
+    )
+    {
+        services.Configure<CacheConfiguration>(configuration.GetSection(CacheConfiguration.SectionName));
+        services.AddSingleton<IMovieCache, InMemoryCache>();
+        services.AddMemoryCache(setup => 
+        {
+            var options = configuration.GetSection(CacheConfiguration.SectionName).Get<CacheConfiguration>()
+                          ?? throw new Exception($"{nameof(CacheConfiguration)} doesn't exist");
 
-        services.ConfigureOmdbMovieSource(configuration);
-
+            setup.SizeLimit = options.CacheSize;
+        });
+        
         return services;
     }
 
@@ -38,18 +57,18 @@ public static class DependencyInjection
     {
         services.Configure<OmdbConfiguration>(configuration.GetSection(OmdbConfiguration.SectionName));
 
+        var options = configuration.GetSection(OmdbConfiguration.SectionName).Get<OmdbConfiguration>()
+                      ?? throw new Exception($"{nameof(OmdbConfiguration)} doesn't exist");
+        
         // register HttpClient for OmdbMovieSource with RetryPolicy
-        services.AddHttpClient(OmdbMovieSource.HttpClientName, (provider, client) =>
+        services.AddHttpClient(OmdbMovieSource.HttpClientName, client =>
             {
-                var options = provider.GetRequiredService<IOptions<OmdbConfiguration>>().Value
-                              ?? throw new Exception($"{nameof(OmdbConfiguration)} doesn't exist");
-
-                client.BaseAddress = options.BaseAddress
-                                     ?? throw new Exception(
-                                         $"{nameof(OmdbConfiguration)}:{nameof(options.BaseAddress)} should be set");
                 client.Timeout = options.TimeOut;
+                client.BaseAddress = options.BaseAddress
+                                     ?? throw new Exception($"{nameof(OmdbConfiguration)}:{nameof(options.BaseAddress)} should be set");
             })
-            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(RetryCount, _ => WaitBetweenRetry));
+            .AddTransientHttpErrorPolicy(policy => 
+                policy.WaitAndRetryAsync(options.RetryCount, _ => options.WaitBetweenRetry));
 
         return services;
     }
