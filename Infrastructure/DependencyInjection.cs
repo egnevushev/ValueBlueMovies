@@ -6,6 +6,7 @@ using Infrastructure.Cache;
 using Infrastructure.MovieSources.Omdb;
 using Infrastructure.MovieSources.Omdb.Configuration;
 using Infrastructure.Repositories;
+using Infrastructure.Repositories.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
@@ -16,21 +17,22 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        ConfigurationManager configuration
+        IConfiguration configuration
     )
     {
         services
             .RegisterAllSources()
-            .RegisterMongoRepository()
+            .RegisterMongoRepository(configuration)
             .ConfigureOmdbMovieSource(configuration)
             .ConfigureMovieCache(configuration);
 
         return services;
     }
 
-    private static IServiceCollection RegisterMongoRepository(this IServiceCollection services)
+    private static IServiceCollection RegisterMongoRepository(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IAuditRepository, AuditRepository>();
+        services.Configure<AuditDbConfiguration>(configuration.GetSection(AuditDbConfiguration.SectionName));
+        services.AddSingleton<IAuditRepository, AuditRepository>();
 
         return services;
     }
@@ -45,7 +47,7 @@ public static class DependencyInjection
     
     private static IServiceCollection ConfigureMovieCache(
         this IServiceCollection services,
-        ConfigurationManager configuration
+        IConfiguration configuration
     )
     {
         services.Configure<CacheConfiguration>(configuration.GetSection(CacheConfiguration.SectionName));
@@ -63,7 +65,7 @@ public static class DependencyInjection
 
     private static IServiceCollection ConfigureOmdbMovieSource(
         this IServiceCollection services,
-        ConfigurationManager configuration
+        IConfiguration configuration
     )
     {
         services.Configure<OmdbConfiguration>(configuration.GetSection(OmdbConfiguration.SectionName));

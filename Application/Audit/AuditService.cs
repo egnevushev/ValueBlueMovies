@@ -26,8 +26,8 @@ public class AuditService : IAuditService
             try
             {
                 using var scope = _serviceScopeFactory.CreateScope();
-                var repository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
                 logger = scope.ServiceProvider.GetRequiredService<ILogger<AuditService>>();
+                var repository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
                 
                 var processingTimeMs = (int)(requestMeta.Processed - requestMeta.Requested).TotalMilliseconds;
 
