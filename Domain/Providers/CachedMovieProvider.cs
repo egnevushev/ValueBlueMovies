@@ -5,14 +5,14 @@ namespace Domain.Providers;
 public class CachedMovieProvider : IMovieProvider
 {
     private readonly IMovieProvider _movieProvider;
-    private readonly IMovieCache _movieCache;
+    private readonly IMovieCacheStrategy _movieCacheStrategy;
 
-    public CachedMovieProvider(IMovieProvider movieProvider, IMovieCache movieCache)
+    public CachedMovieProvider(IMovieProvider movieProvider, IMovieCacheStrategy movieCacheStrategy)
     {
         _movieProvider = movieProvider;
-        _movieCache = movieCache;
+        _movieCacheStrategy = movieCacheStrategy;
     }
 
     public async Task<Movie?> FindMovie(string title) => 
-        await _movieCache.GetOrCreate(title, () => _movieProvider.FindMovie(title));
+        await _movieCacheStrategy.GetOrCreate(title, () => _movieProvider.FindMovie(title));
 }

@@ -1,19 +1,20 @@
 using System.Collections.Concurrent;
 using Domain;
+using Domain.Providers;
 using Domain.ValueObjects;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Cache;
 
-public class InMemoryCache : IMovieCache
+public class InMemoryCacheStrategy : IMovieCacheStrategy
 {
     private readonly IMemoryCache _cache;
     private readonly TimeSpan _expiration;
 
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new ();
 
-    public InMemoryCache(IMemoryCache cache, IOptions<CacheConfiguration> options)
+    public InMemoryCacheStrategy(IMemoryCache cache, IOptions<CacheConfiguration> options)
     {
         _cache = cache;
         _expiration = options.Value.Expiration;

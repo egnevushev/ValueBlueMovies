@@ -1,8 +1,8 @@
 using Domain.ValueObjects;
 
-namespace Domain;
+namespace Domain.Providers;
 
-public interface IMovieCache
+public interface IMovieCacheStrategy
 {
     Task<Movie?> GetOrCreate(string title, Func<Task<Movie?>> factory);
 }

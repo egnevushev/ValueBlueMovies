@@ -1,8 +1,11 @@
 using Domain;
+using Domain.Providers;
+using Domain.Repositories;
 using Domain.Sources;
 using Infrastructure.Cache;
 using Infrastructure.MovieSources.Omdb;
 using Infrastructure.MovieSources.Omdb.Configuration;
+using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
@@ -18,12 +21,20 @@ public static class DependencyInjection
     {
         services
             .RegisterAllSources()
+            .RegisterMongoRepository()
             .ConfigureOmdbMovieSource(configuration)
             .ConfigureMovieCache(configuration);
 
         return services;
     }
 
+    private static IServiceCollection RegisterMongoRepository(this IServiceCollection services)
+    {
+        services.AddScoped<IAuditRepository, AuditRepository>();
+
+        return services;
+    }
+    
     private static IServiceCollection RegisterAllSources(this IServiceCollection services) =>
         services.Scan(scan => scan
             .FromAssemblies(typeof(DependencyInjection).Assembly)
@@ -38,7 +49,7 @@ public static class DependencyInjection
     )
     {
         services.Configure<CacheConfiguration>(configuration.GetSection(CacheConfiguration.SectionName));
-        services.AddSingleton<IMovieCache, InMemoryCache>();
+        services.AddSingleton<IMovieCacheStrategy, InMemoryCacheStrategy>();
         services.AddMemoryCache(setup => 
         {
             var options = configuration.GetSection(CacheConfiguration.SectionName).Get<CacheConfiguration>()

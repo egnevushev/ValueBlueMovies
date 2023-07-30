@@ -16,33 +16,33 @@ public class AuditService : IAuditService
 
     public void AuditRequest(RequestMeta requestMeta)
     {
+        //todo: should split responsibility of FireAndForget and Auditing
+        
+        // FIRE AND FORGET 
         Task.Run(async () =>
         {
             ILogger? logger = null;
-            // Exceptions must be caught
+            
             try
             {
                 using var scope = _serviceScopeFactory.CreateScope();
                 var repository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
                 logger = scope.ServiceProvider.GetRequiredService<ILogger<AuditService>>();
                 
-                //create Audit
-                //calc
-                //var processingTimeMs = (int)(movieRequest.RequestDateTime - DateTime.Now).TotalMilliseconds;
+                var processingTimeMs = (int)(requestMeta.Processed - requestMeta.Requested).TotalMilliseconds;
 
-                /*var audit = Domain.Entities.Audit.Create(movieRequest.Title, 
-                    movie.ImdbID, 
-                    movieRequest.RequestDateTime, 
-                    DateTime.Now,
-                    movieRequest.IpAddress);*/
+                var audit = Domain.Entities.Audit.Create(requestMeta.SearchToken, 
+                    requestMeta.ImdbId, 
+                    requestMeta.Requested, 
+                    processingTimeMs,
+                    requestMeta.IpAddress);
         
-                //fire and forget or use Quartz
-                //repository.SaveAudit(audit);
+                await repository.SaveAudit(audit);
             }
             catch (Exception e)
             {
                 //alert
-                logger?.LogError(e, "AAAAA");
+                logger?.LogError(e, "Error has occured while auditing request: {@Request}", requestMeta);
             }
         });
     }

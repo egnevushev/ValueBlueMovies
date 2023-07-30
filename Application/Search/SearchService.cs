@@ -1,3 +1,4 @@
+using Application.Audit;
 using Domain.Providers;
 using Domain.ValueObjects;
 
@@ -5,12 +6,12 @@ namespace Application.Search;
 
 public class SearchService : ISearchService
 {
-    //private readonly IAuditService _auditService;
+    private readonly IAuditService _auditService;
     private readonly IMovieProvider _movieProvider;
 
-    public SearchService(IMovieProvider movieProvider)
+    public SearchService(IMovieProvider movieProvider, IAuditService auditService)
     {
-        //_auditService = auditService;
+        _auditService = auditService;
         _movieProvider = movieProvider;
     }
 
@@ -20,10 +21,14 @@ public class SearchService : ISearchService
         if (movie is null)
             return null;
 
-
-        // crate RequestMeta
+        RequestMeta requestMeta = new(
+            movieRequest.Title,
+            movie.ImdbId,
+            movieRequest.Requested,
+            DateTime.Now,
+            movieRequest.IpAddress);
         
-        //_auditService.LogAudit(RequestMeta);
+        _auditService.AuditRequest(requestMeta);
 
         return movie;
     }

@@ -16,7 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IMovieProvider, MovieProvider>();
         services.Decorate<IMovieProvider, CachedMovieProvider>();
         
-        //services.AddScoped<IAuditService, AuditService>();
+        services.AddScoped<IAuditService, AuditService>();
         
         return services;
     }
