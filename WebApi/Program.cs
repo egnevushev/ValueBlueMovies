@@ -1,5 +1,7 @@
 using Application;
 using Application.Admin;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Infrastructure;
 using Mapster;
 using MapsterMapper;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+var assembly = typeof(Program).Assembly;
 
 builder.Services
     .AddApplication()
@@ -27,6 +30,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddValidatorsFromAssembly(assembly);
+builder.Services.AddFluentValidationAutoValidation();
 
 var app = builder.Build();
 

@@ -14,8 +14,8 @@ public class AdminService : IAdminService
     public Task<Domain.Entities.Audit?> FindById(string id, CancellationToken cancellationToken) =>
         _auditRepository.FindById(id, cancellationToken);
 
-    public Task<IReadOnlyCollection<Domain.Entities.Audit>> GetAll(CancellationToken cancellationToken) =>
-        _auditRepository.GetAll(cancellationToken);
+    public Task<IReadOnlyCollection<Domain.Entities.Audit>> GetAll(int count, string? lastId, CancellationToken cancellationToken) =>
+        _auditRepository.GetAll(count, lastId, cancellationToken);
 
     public Task Remove(string id, CancellationToken cancellationToken) =>
         _auditRepository.Remove(id, cancellationToken);

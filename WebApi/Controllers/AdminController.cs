@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Application.Admin;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebApi.Requests;
 
 namespace WebApi.Controllers;
 
@@ -20,16 +21,16 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("findById")]
-    public async Task<IActionResult> FindById([FromQuery] string id, CancellationToken cancellationToken)
+    public async Task<IActionResult> FindById([FromQuery] FindByIdRequest request, CancellationToken cancellationToken)
     {
-        var audit = await _adminService.FindById(id, cancellationToken);
+        var audit = await _adminService.FindById(request.Id, cancellationToken);
         return new JsonResult(audit);
     }
     
     [HttpGet("getAll")]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] GetAllRequest request, CancellationToken cancellationToken)
     {
-        var audits = await _adminService.GetAll(cancellationToken);
+        var audits = await _adminService.GetAll(request.Count, request.LastId, cancellationToken);
         return new JsonResult(audits);
     }
     

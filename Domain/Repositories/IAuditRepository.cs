@@ -8,7 +8,7 @@ public interface IAuditRepository
     
     Task<Audit?> FindById(string id, CancellationToken cancellationToken);
     
-    Task<IReadOnlyCollection<Audit>> GetAll(CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<Audit>> GetAll(int count, string? lastId, CancellationToken cancellationToken);
     
     Task Remove(string id, CancellationToken cancellationToken);
 }
