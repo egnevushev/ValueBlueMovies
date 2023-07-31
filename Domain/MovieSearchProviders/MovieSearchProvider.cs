@@ -1,13 +1,13 @@
 using Domain.Sources;
 using Domain.ValueObjects;
 
-namespace Domain.Providers;
+namespace Domain.MovieSearchProviders;
 
-public class MovieProvider : IMovieProvider
+public class MovieSearchProvider : IMovieSearchProvider
 {
     private readonly IEnumerable<IMovieSource> _movieSources;
 
-    public MovieProvider(IEnumerable<IMovieSource> movieSources)
+    public MovieSearchProvider(IEnumerable<IMovieSource> movieSources)
     {
         _movieSources = movieSources;
     }

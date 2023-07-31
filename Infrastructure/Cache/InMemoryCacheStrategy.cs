@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using Domain;
-using Domain.Providers;
+using Domain.MovieSearchProviders;
 using Domain.ValueObjects;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;

@@ -12,10 +12,11 @@ public sealed record Audit(
 {
     public static Audit Create(string searchToken,
         string imdbId,
-        DateTime dateRequest,
-        int processingTimeMs,
+        DateTime requested,
+        DateTime processed,
         IPAddress ipAddress)
     {
-        return new Audit(searchToken, imdbId, processingTimeMs, dateRequest, ipAddress.ToString());
+        var processingTimeMs = (int)(processed - requested).TotalMilliseconds;
+        return new Audit(searchToken, imdbId, processingTimeMs, requested, ipAddress.ToString());
     }
 }

@@ -1,5 +1,4 @@
-using Domain;
-using Domain.Providers;
+using Domain.MovieSearchProviders;
 using Domain.Repositories;
 using Domain.Sources;
 using Infrastructure.Cache;
@@ -44,7 +43,7 @@ public static class DependencyInjection
             Database = options.DatabaseName
         });
         
-        services.AddSingleton<IAuditRepository, AuditRepository>();
+        services.AddScoped<IAuditRepository, AuditRepository>();
 
         return services;
     }

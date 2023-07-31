@@ -1,3 +1,4 @@
+using Domain.Audit;
 using Domain.Repositories;
 using Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ public class AuditService : IAuditService
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public void AuditRequest(RequestMeta requestMeta)
+    public void AuditRequest(RequestMeta requestMeta, CancellationToken cancellationToken)
     {
         //todo: should split responsibility of FireAndForget and Auditing
         
@@ -29,15 +30,13 @@ public class AuditService : IAuditService
                 logger = scope.ServiceProvider.GetRequiredService<ILogger<AuditService>>();
                 var repository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
                 
-                var processingTimeMs = (int)(requestMeta.Processed - requestMeta.Requested).TotalMilliseconds;
-
                 var audit = Domain.Entities.Audit.Create(requestMeta.SearchToken, 
                     requestMeta.ImdbId, 
-                    requestMeta.Requested, 
-                    processingTimeMs,
+                    requestMeta.Requested,
+                    requestMeta.Processed,
                     requestMeta.IpAddress);
         
-                await repository.SaveAudit(audit);
+                await repository.SaveAudit(audit, cancellationToken);
             }
             catch (Exception e)
             {

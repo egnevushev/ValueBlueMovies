@@ -3,7 +3,7 @@ using Mapster;
 
 namespace Infrastructure.MovieSources.Omdb.Models;
 
-public class Mapping : IRegister
+public sealed class Mapping : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {

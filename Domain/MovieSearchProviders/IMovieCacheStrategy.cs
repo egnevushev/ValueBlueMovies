@@ -1,6 +1,6 @@
 using Domain.ValueObjects;
 
-namespace Domain.Providers;
+namespace Domain.MovieSearchProviders;
 
 public interface IMovieCacheStrategy
 {
