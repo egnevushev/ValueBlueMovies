@@ -8,4 +8,9 @@ public interface IAdminService
     Task<IReadOnlyCollection<Domain.Entities.Audit>> GetAll(int count, string? lastId, CancellationToken cancellationToken);
     
     Task Remove(string id, CancellationToken cancellationToken);
+    
+    Task<IReadOnlyCollection<Domain.Entities.Audit>> DatePeriod(DateTime start, DateTime? end, int count, 
+        string? lastId, CancellationToken cancellationToken);
+
+    Task<IReadOnlyCollection<Domain.ValueObjects.AuditStatPerDay>> GetStatisticsPerDay(CancellationToken cancellationToken);
 }

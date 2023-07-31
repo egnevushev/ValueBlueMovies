@@ -26,6 +26,8 @@ builder.Services.AddScoped<IMapper, ServiceMapper>();
 builder.Host.UseSerilog((context, configuration) => 
     configuration.ReadFrom.Configuration(context.Configuration));
 
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();

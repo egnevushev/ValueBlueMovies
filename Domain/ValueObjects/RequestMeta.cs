@@ -2,7 +2,7 @@ using System.Net;
 
 namespace Domain.ValueObjects;
 
-public record RequestMeta(
+public readonly record struct RequestMeta(
     string SearchToken,
     string ImdbId,
     DateTime Requested,

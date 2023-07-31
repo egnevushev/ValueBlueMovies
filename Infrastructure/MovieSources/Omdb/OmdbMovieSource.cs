@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Web;
 using Domain.Sources;
 using Domain.ValueObjects;
 using Infrastructure.MovieSources.Omdb.Configuration;
@@ -26,7 +27,7 @@ public class OmdbMovieSource : IMovieSource
 
     public async Task<Movie?> FindMovie(string title)
     {
-        var response = await _httpClient.GetAsync($"/?t={title}&apikey={_apiKey}");
+        var response = await _httpClient.GetAsync($"/?t={HttpUtility.UrlEncode(title)}&apikey={_apiKey}");
         if (response.StatusCode == HttpStatusCode.NotFound)
             return null;
         

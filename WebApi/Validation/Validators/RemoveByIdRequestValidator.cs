@@ -1,4 +1,4 @@
-namespace WebApi.Validation;
+namespace WebApi.Validation.Validators;
 
 public class RemoveByIdRequestValidator
 {

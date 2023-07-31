@@ -18,6 +18,7 @@ public class AuditPoco
     public int ProcessingTimeMs { get; set; } 
     
     [BsonElement("timestamp")] 
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     public DateTime TimeStamp { get; set; }
     
     [BsonElement("ip_address")] 

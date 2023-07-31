@@ -1,17 +1,17 @@
 using FluentValidation;
 using WebApi.Requests;
 
-namespace WebApi.Validation;
+namespace WebApi.Validation.Validators;
 
 public class GetAllRequestValidator : AbstractValidator<GetAllRequest>
 {
     public GetAllRequestValidator()
     {
         RuleFor(x => x.Count)
-            .InclusiveBetween(1, 100);
+            .InclusiveBetween(ValidationConstants.MinOnPageCount, ValidationConstants.MaxOnPageCount);
         
         RuleFor(x => x.LastId)
-            .Must(ObjectIdValidator.IsValidObjectId!)
+            .Must(ObjectIdValidation.IsValidObjectId!)
             .When(x => x.LastId is not null);
     }
 }

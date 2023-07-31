@@ -20,21 +20,36 @@ public class AdminController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("findById")]
+    [HttpGet("audit")]
     public async Task<IActionResult> FindById([FromQuery] FindByIdRequest request, CancellationToken cancellationToken)
     {
         var audit = await _adminService.FindById(request.Id, cancellationToken);
         return new JsonResult(audit);
     }
     
-    [HttpGet("getAll")]
+    [HttpGet("audit/all")]
     public async Task<IActionResult> GetAll([FromQuery] GetAllRequest request, CancellationToken cancellationToken)
     {
         var audits = await _adminService.GetAll(request.Count, request.LastId, cancellationToken);
         return new JsonResult(audits);
     }
     
-    [HttpGet("remove")]
+    [HttpGet("audit/period")]
+    public async Task<IActionResult> DatePeriod([FromQuery] DatePeriodRequest request, CancellationToken cancellationToken)
+    {
+        var audits = await _adminService.DatePeriod(request.Start, request.End,  request.Count, 
+            request.LastId, cancellationToken);
+        return new JsonResult(audits);
+    }
+    
+    [HttpGet("audit/stat")]
+    public async Task<IActionResult> GetStatisticsPerDay(CancellationToken cancellationToken)
+    {
+        var audits = await _adminService.GetStatisticsPerDay(cancellationToken);
+        return new JsonResult(audits);
+    }
+    
+    [HttpDelete("audit")]
     public async Task<IActionResult> Remove([FromQuery] string id, CancellationToken cancellationToken)
     {
         await _adminService.Remove(id, cancellationToken);
