@@ -16,6 +16,7 @@ public class DatePeriodRequestValidator : AbstractValidator<DatePeriodRequest>
         
         RuleFor(x => x.LastId)
             .Must(ObjectIdValidation.IsValidObjectId!)
-            .When(x => x.LastId is not null);
+            .When(x => x.LastId is not null)
+            .WithMessage("LastId value is not valid ObjectID");
     }
 }

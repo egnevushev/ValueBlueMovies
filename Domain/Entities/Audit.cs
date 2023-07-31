@@ -8,7 +8,7 @@ public sealed record Audit(
     int ProcessingTimeMs,
     DateTime TimeStamp,
     string IpAddress,
-    string Id = default)
+    string? Id = null)
 {
     public static Audit Create(string searchToken,
         string imdbId,

@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Infrastructure.MovieSources.Omdb.Configuration;
 
 public class OmdbConfiguration
 {
     public const string SectionName = nameof(OmdbConfiguration);
 
+    [Required(AllowEmptyStrings = false)]
     public Uri? BaseAddress { get; set; }
     
     public string ApiKey { get; set; } = string.Empty;

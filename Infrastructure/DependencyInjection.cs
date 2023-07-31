@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Domain.MovieSearchProviders;
 using Domain.Repositories;
 using Domain.Sources;
@@ -6,6 +7,8 @@ using Infrastructure.MovieSources.Omdb;
 using Infrastructure.MovieSources.Omdb.Configuration;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Configuration;
+using Mapster;
+using MapsterMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Mongo.Migration.Startup;
@@ -17,21 +20,19 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,IConfiguration configuration)
     {
         services
-            .RegisterAllSources()
-            .RegisterMongoRepository(configuration)
+            .AddAllMovieSources()
+            .AddMongoRepository(configuration)
             .ConfigureOmdbMovieSource(configuration)
-            .ConfigureMovieCache(configuration);
+            .AddMovieCache(configuration)
+            .AddMapster();
 
         return services;
     }
 
-    private static IServiceCollection RegisterMongoRepository(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddMongoRepository(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<AuditDbConfiguration>(configuration.GetSection(AuditDbConfiguration.SectionName));
         
@@ -48,18 +49,24 @@ public static class DependencyInjection
         return services;
     }
     
-    private static IServiceCollection RegisterAllSources(this IServiceCollection services) =>
+    private static IServiceCollection AddAllMovieSources(this IServiceCollection services) =>
         services.Scan(scan => scan
             .FromAssemblies(typeof(DependencyInjection).Assembly)
             .AddClasses(classes => classes.AssignableTo<IMovieSource>())
             .As<IMovieSource>()
             .WithScopedLifetime()
         );
+
+    private static IServiceCollection AddMapster(this IServiceCollection services)
+    {
+        //register mapster
+        var config = new TypeAdapterConfig();
+        services.AddSingleton(config);
+        services.AddScoped<IMapper, ServiceMapper>();
+        return services;
+    }
     
-    private static IServiceCollection ConfigureMovieCache(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    private static IServiceCollection AddMovieCache(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<CacheConfiguration>(configuration.GetSection(CacheConfiguration.SectionName));
         services.AddSingleton<IMovieCacheStrategy, InMemoryCacheStrategy>();
@@ -72,10 +79,7 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection ConfigureOmdbMovieSource(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    private static IServiceCollection ConfigureOmdbMovieSource(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<OmdbConfiguration>(configuration.GetSection(OmdbConfiguration.SectionName));
 
@@ -84,9 +88,9 @@ public static class DependencyInjection
         // register HttpClient for OmdbMovieSource with RetryPolicy
         services.AddHttpClient(OmdbMovieSource.HttpClientName, client =>
             {
+                DomainException.ThrowIfNull(options.BaseAddress);
                 client.Timeout = options.TimeOut;
-                client.BaseAddress = options.BaseAddress
-                                     ?? throw new Exception($"{nameof(OmdbConfiguration)}:{nameof(options.BaseAddress)} should be set");
+                client.BaseAddress = options.BaseAddress;
             })
             .AddTransientHttpErrorPolicy(policy => 
                 policy.WaitAndRetryAsync(options.RetryCount, _ => options.WaitBetweenRetry));

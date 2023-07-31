@@ -9,5 +9,4 @@ public sealed class AuditDbConfiguration
     public string DatabaseName { get; set; } = string.Empty;
 
     public string AuditCollectionName { get; set; } = string.Empty;
-
 }

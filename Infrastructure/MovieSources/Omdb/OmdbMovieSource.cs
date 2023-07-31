@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Web;
+using Domain.Exceptions;
 using Domain.Sources;
 using Domain.ValueObjects;
 using Infrastructure.MovieSources.Omdb.Configuration;
@@ -36,7 +37,7 @@ public class OmdbMovieSource : IMovieSource
             return null;
 
         if (content.IsErrorOccured(out var message))
-            throw new Exception($"Omdb error: {message}");
+            throw new DomainException($"Omdb error: {message}");
         
         return _mapper.Map<Movie>(content);
     }
