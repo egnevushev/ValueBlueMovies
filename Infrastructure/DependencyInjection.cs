@@ -9,6 +9,9 @@ using Infrastructure.Repositories;
 using Infrastructure.Repositories.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Mongo.Migration.Startup;
+using Mongo.Migration.Startup.DotNetCore;
+using MongoDB.Driver;
 using Polly;
 
 namespace Infrastructure;
@@ -32,6 +35,15 @@ public static class DependencyInjection
     private static IServiceCollection RegisterMongoRepository(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<AuditDbConfiguration>(configuration.GetSection(AuditDbConfiguration.SectionName));
+        
+        var options = configuration.GetSectionAs<AuditDbConfiguration>(AuditDbConfiguration.SectionName);
+        services.AddSingleton<IMongoClient>(new MongoClient(options.ConnectionString));
+        services.AddMigration(new MongoMigrationSettings
+        {
+            ConnectionString = options.ConnectionString,
+            Database = options.DatabaseName
+        });
+        
         services.AddSingleton<IAuditRepository, AuditRepository>();
 
         return services;
@@ -54,9 +66,7 @@ public static class DependencyInjection
         services.AddSingleton<IMovieCacheStrategy, InMemoryCacheStrategy>();
         services.AddMemoryCache(setup => 
         {
-            var options = configuration.GetSection(CacheConfiguration.SectionName).Get<CacheConfiguration>()
-                          ?? throw new Exception($"{nameof(CacheConfiguration)} doesn't exist");
-
+            var options = configuration.GetSectionAs<CacheConfiguration>(CacheConfiguration.SectionName);
             setup.SizeLimit = options.CacheSize;
         });
         
@@ -70,8 +80,7 @@ public static class DependencyInjection
     {
         services.Configure<OmdbConfiguration>(configuration.GetSection(OmdbConfiguration.SectionName));
 
-        var options = configuration.GetSection(OmdbConfiguration.SectionName).Get<OmdbConfiguration>()
-                      ?? throw new Exception($"{nameof(OmdbConfiguration)} doesn't exist");
+        var options = configuration.GetSectionAs<OmdbConfiguration>(OmdbConfiguration.SectionName);
         
         // register HttpClient for OmdbMovieSource with RetryPolicy
         services.AddHttpClient(OmdbMovieSource.HttpClientName, client =>
@@ -85,4 +94,8 @@ public static class DependencyInjection
 
         return services;
     }
+
+    private static T GetSectionAs<T>(this IConfiguration configuration, string name) => 
+        configuration.GetSection(name).Get<T>() ?? throw new Exception($"{typeof(T).Name} doesn't exist");
+    
 }
