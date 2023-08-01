@@ -29,7 +29,6 @@ app.UseSwaggerUI();
 
 app.UseProblemDetails();
 app.UseSerilogRequestLogging();
-app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
