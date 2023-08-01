@@ -2,21 +2,21 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0A53C19A-E20F-4724-BEBD-30E978F08CFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{4DCE19D5-F07F-4C11-9788-56B38F0F1D48}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain.csproj", "{4DCE19D5-F07F-4C11-9788-56B38F0F1D48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{09F45132-3F01-410A-8873-93D77B3F16D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{09F45132-3F01-410A-8873-93D77B3F16D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{A43AD6E2-22B8-4A3D-9E5F-048938AE86DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{A43AD6E2-22B8-4A3D-9E5F-048938AE86DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{56C32C83-0328-422B-9953-4B20329A1611}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "src\WebApi\WebApi.csproj", "{56C32C83-0328-422B-9953-4B20329A1611}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BA3CE1D1-478D-4A0F-BC02-D31352155EB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.UnitTests", "Infrastructure.UnitTests\Infrastructure.UnitTests.csproj", "{6A57307F-BD93-45BB-B3B1-30AF1D6BBE55}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.UnitTests", "tests\UnitTests\Infrastructure.UnitTests\Infrastructure.UnitTests.csproj", "{6A57307F-BD93-45BB-B3B1-30AF1D6BBE55}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{70496FD7-FF10-477E-9D72-FE73FE60E5F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.UnitTests", "WebApi.UnitTests\WebApi.UnitTests.csproj", "{4FFF55D6-4DC7-4F91-AEB6-53BB27214FA5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.UnitTests", "tests\UnitTests\WebApi.UnitTests\WebApi.UnitTests.csproj", "{4FFF55D6-4DC7-4F91-AEB6-53BB27214FA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
