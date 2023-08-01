@@ -7,10 +7,15 @@ Service for searching movie info and gathering statistics info (Audit).
 First, check [`appsettings.json`](src/WebApi/appsettings.json) and provide values in the next sections:  
 
 - `AuditDbConfiguration.ConnectionString`: MongoDB connectionString
-- `OmdbConfiguration.ApiKey`: Api-Key for Omdb API
+- `OmdbConfiguration.ApiKey`: Api-Key for [`Omdb API`](http://www.omdbapi.com/apikey.aspx)
 - `AuthConfiguration.ApiKey`: Api-Key for admin section
 
-Then run: `./run.sh` or `run.cmd` and go to: [`http://localhost:5050`](http://localhost:5050)
+Then run: `./run.sh` or `run.cmd` and go to: [`http://localhost:5050/swagger`](http://localhost:5050/swagger)
+
+### Usage
+
+You can use swagger for exloring and trying API.  
+For access to admin section you should provide a valid Api-Key with a `X-API-KEY` Header.
 
 ### Estimations 
 
