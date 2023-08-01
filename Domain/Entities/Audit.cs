@@ -10,7 +10,8 @@ public sealed record Audit(
     string IpAddress,
     string? Id = null)
 {
-    public static Audit Create(string searchToken,
+    public static Audit Create(
+        string searchToken,
         string imdbId,
         DateTime requested,
         DateTime processed,

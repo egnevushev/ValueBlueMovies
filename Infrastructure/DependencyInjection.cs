@@ -20,12 +20,12 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services,IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddAllMovieSources()
-            .AddMongoRepository(configuration)
             .ConfigureOmdbMovieSource(configuration)
+            .AddMongoRepository(configuration)
             .AddMovieCache(configuration)
             .AddMapster();
 
@@ -59,7 +59,6 @@ public static class DependencyInjection
 
     private static IServiceCollection AddMapster(this IServiceCollection services)
     {
-        //register mapster
         var config = new TypeAdapterConfig();
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
@@ -100,5 +99,4 @@ public static class DependencyInjection
 
     private static T GetSectionAs<T>(this IConfiguration configuration, string name) => 
         configuration.GetSection(name).Get<T>() ?? throw new Exception($"{typeof(T).Name} doesn't exist");
-    
 }

@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Application.Movies;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Extractors;
 
 namespace WebApi.Controllers;
 
-[ApiController]
-[Route("api")]
+[ApiController, Route("api")]
 public class MoviesController : ControllerBase
 {
     private readonly IMoviesService _moviesService;
@@ -20,7 +20,7 @@ public class MoviesController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<IActionResult> GetMovie([FromQuery] string title, CancellationToken cancellationToken)
     {
-        var request = new MovieRequest(title, HttpContext.Connection.RemoteIpAddress, DateTime.Now);
+        var request = new MovieRequest(title, HttpContext.ExtractIpAddress(), DateTime.Now);
         var movie = await _moviesService.FindMovie(request, cancellationToken);
         
         return movie is null 

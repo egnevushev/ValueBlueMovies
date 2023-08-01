@@ -30,7 +30,7 @@ public record OmdbResponse
         message = string.Empty;
         if (Error != OmdbConstants.NotFoundError && Response == OmdbConstants.FalseResponse)
         {
-            message = Response;
+            message = Error ?? "Unknown Error";
             return true;
         }
 

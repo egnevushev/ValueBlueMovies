@@ -1,8 +1,8 @@
 using Application;
+using Hellang.Middleware.ProblemDetails;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using WebApi;
 
@@ -17,18 +17,17 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApiKeyAuthentication(builder.Configuration)
     .AddSwagger()
-    .AddValidation(assembly);
+    .AddValidation(assembly)
+    .AddProblemDetailsHandler();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
+app.UseProblemDetails();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthorization();

@@ -23,24 +23,24 @@ public class AuditRepository : IAuditRepository
         _mapper = mapper;
     }
     
-    public async Task SaveAudit(Audit audit, CancellationToken cancellationToken)
+    public async Task SaveAudit(Audit audit, CancellationToken token)
     {
         var poco = _mapper.Map<AuditPoco>(audit);
-        await _auditCollection.InsertOneAsync(poco, new InsertOneOptions(), cancellationToken);
+        await _auditCollection.InsertOneAsync(poco, new InsertOneOptions(), token);
     }
 
-    public async Task<Audit?> FindById(string id, CancellationToken cancellationToken)
+    public async Task<Audit?> FindById(string id, CancellationToken token)
     {
         var options = new FindOptions<AuditPoco> { Limit = 1 };
-        var cursor = await _auditCollection.FindAsync(x => x.Id == ObjectId.Parse(id), options, cancellationToken);
-        var poco = await cursor.FirstOrDefaultAsync(cancellationToken);
+        var cursor = await _auditCollection.FindAsync(x => x.Id == ObjectId.Parse(id), options, token);
+        var poco = await cursor.FirstOrDefaultAsync(token);
         
         return poco is null
             ? null
             : _mapper.Map<Audit>(poco);
     }
 
-    public async Task<IReadOnlyCollection<Audit>> GetAll(int count, string? lastId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Audit>> GetAll(int count, string? lastId, CancellationToken token)
     {
         var options = new FindOptions<AuditPoco>
             { Sort = Builders<AuditPoco>.Sort.Descending(x => x.Id), Limit = count };
@@ -49,17 +49,16 @@ public class AuditRepository : IAuditRepository
             ? _ => true
             : audit => audit.Id < ObjectId.Parse(lastId);
         
-        var cursor = await _auditCollection.FindAsync(where, options, cancellationToken);
-        var pocoCollection = await cursor.ToListAsync(cancellationToken);
+        var cursor = await _auditCollection.FindAsync(where, options, token);
+        var pocoCollection = await cursor.ToListAsync(token);
         
         return _mapper.Map<Audit[]>(pocoCollection);
     }
 
-    public async Task Remove(string id, CancellationToken cancellationToken) =>
-        await _auditCollection.DeleteOneAsync(x => x.Id == ObjectId.Parse(id), new DeleteOptions(), cancellationToken);
+    public async Task Remove(string id, CancellationToken token) =>
+        await _auditCollection.DeleteOneAsync(x => x.Id == ObjectId.Parse(id), new DeleteOptions(), token);
 
-    public async Task<IReadOnlyCollection<Audit>> DatePeriod(DateTime start, DateTime? end, int count, string? lastId, 
-        CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Audit>> DatePeriod(DateTime start, DateTime? end, int count, string? lastId, CancellationToken token)
     {
         var sorting = Builders<AuditPoco>.Sort
             .Descending(x => x.TimeStamp)
@@ -83,19 +82,36 @@ public class AuditRepository : IAuditRepository
             filterDefinitions.Add(filter.Lt(x => x.Id, new ObjectId(lastId)));
         }
         
-        var cursor = await _auditCollection.FindAsync(filter.And(filterDefinitions), options, cancellationToken);
-        var pocoCollection = await cursor.ToListAsync(cancellationToken);
+        var cursor = await _auditCollection.FindAsync(filter.And(filterDefinitions), options, token);
+        var pocoCollection = await cursor.ToListAsync(token);
 
         return _mapper.Map<Audit[]>(pocoCollection);
     }
 
-    public async Task<IReadOnlyCollection<AuditStatPerDay>> GetStatisticsPerDay(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<AuditStatPerDay>> GetStatisticsPerDay(DateTime? start, DateTime? end, CancellationToken token)
     {
+        Expression<Func<AuditPoco, bool>> match = (start, end) switch
+        {
+            (null, null) => _ => true,
+            (not null, null) => (audit) => audit.TimeStamp >= start,
+            (null, not null) => (audit) => audit.TimeStamp <= end.Value,
+            (not null, not null) => (audit) => audit.TimeStamp >= start && audit.TimeStamp <= end.Value
+        };
+            
         return await _auditCollection
             .Aggregate()
+            .Match(match)
             .Group(a => new DateTime(a.TimeStamp.Year, a.TimeStamp.Month, a.TimeStamp.Day, 0, 0, 0),
                 group => new AuditStatPerDay(group.Key, group.Count())
             )
-            .ToListAsync(cancellationToken);
+            .Sort(Builders<AuditStatPerDay>.Sort.Descending(x => x.Date))
+            .ToListAsync(token);
+    }
+
+    public async Task<IpAddressStat> GetRequestsCountByIpAddress(string ipAddress, CancellationToken token)
+    {
+        var options = new CountOptions();
+        var count =  await _auditCollection.CountDocumentsAsync(x => x.IpAddress == ipAddress, options, token);
+        return new IpAddressStat(ipAddress, count);
     }
 }

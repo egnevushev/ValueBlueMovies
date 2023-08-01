@@ -1,4 +1,6 @@
 
+using Domain.ValueObjects;
+
 namespace Application.Admin;
 
 public interface IAdminService
@@ -11,5 +13,7 @@ public interface IAdminService
     
     Task<IReadOnlyCollection<Domain.Entities.Audit>> DatePeriod(DateTime start, DateTime? end, int count, string? lastId, CancellationToken token);
 
-    Task<IReadOnlyCollection<Domain.ValueObjects.AuditStatPerDay>> GetStatisticsPerDay(CancellationToken token);
+    Task<IReadOnlyCollection<Domain.ValueObjects.AuditStatPerDay>> GetStatisticsPerDay(DateTime? start, DateTime? end, CancellationToken token);
+    
+    Task<IpAddressStat> GetRequestsCountByIpAddress(string ipAddress, CancellationToken token);
 }

@@ -16,11 +16,11 @@ public class AdminService : IAdminService
         _logger = logger;
     }
 
-    public Task<Domain.Entities.Audit?> FindById(string id, CancellationToken token) 
+    public async Task<Domain.Entities.Audit?> FindById(string id, CancellationToken token) 
     {
         try
         {
-            return _auditRepository.FindById(id, token);
+            return await _auditRepository.FindById(id, token);
         }
         catch (DomainException)
         {
@@ -34,11 +34,11 @@ public class AdminService : IAdminService
         }
     }
 
-    public Task<IReadOnlyCollection<Domain.Entities.Audit>> GetAll(int count, string? lastId, CancellationToken token)
+    public async Task<IReadOnlyCollection<Domain.Entities.Audit>> GetAll(int count, string? lastId, CancellationToken token)
     {
         try
         {
-            return _auditRepository.GetAll(count, lastId, token);
+            return await _auditRepository.GetAll(count, lastId, token);
         }
         catch (DomainException)
         {
@@ -52,11 +52,11 @@ public class AdminService : IAdminService
         }
     }
 
-    public Task Remove(string id, CancellationToken cancellationToken)
+    public async Task Remove(string id, CancellationToken cancellationToken)
     {
         try
         {
-            return _auditRepository.Remove(id, cancellationToken);
+            await _auditRepository.Remove(id, cancellationToken);
         }
         catch (DomainException)
         {
@@ -70,12 +70,12 @@ public class AdminService : IAdminService
         }
     }
 
-    public Task<IReadOnlyCollection<Domain.Entities.Audit>> DatePeriod(DateTime start, DateTime? end, int count, 
+    public async Task<IReadOnlyCollection<Domain.Entities.Audit>> DatePeriod(DateTime start, DateTime? end, int count, 
         string? lastId, CancellationToken token)
     {
         try
         {
-            return _auditRepository.DatePeriod(start, end, count, lastId, token);
+            return await _auditRepository.DatePeriod(start, end, count, lastId, token);
         }
         catch (DomainException)
         {
@@ -89,11 +89,11 @@ public class AdminService : IAdminService
         }
     }
     
-    public Task<IReadOnlyCollection<AuditStatPerDay>> GetStatisticsPerDay(CancellationToken token)
+    public async Task<IReadOnlyCollection<AuditStatPerDay>> GetStatisticsPerDay(DateTime? start, DateTime? end, CancellationToken token)
     {
         try
         {
-            return _auditRepository.GetStatisticsPerDay(token);
+            return await _auditRepository.GetStatisticsPerDay(start, end, token);
         }
         catch (DomainException)
         {
@@ -104,6 +104,24 @@ public class AdminService : IAdminService
         {
             _logger.LogError("Exception has occured when getting statistics per day");
             throw new DomainException("Exception has occured when getting statistics per day", exception);
+        }
+    }
+
+    public async Task<IpAddressStat> GetRequestsCountByIpAddress(string ipAddress, CancellationToken token)
+    {
+        try
+        {
+            return await _auditRepository.GetRequestsCountByIpAddress(ipAddress, token);
+        }
+        catch (DomainException)
+        {
+            _logger.LogError("Exception has occured when getting statistics by ip address {ipAddress}", ipAddress);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError("Exception has occured when getting statistics per by address {ipAddress}", ipAddress);
+            throw new DomainException($"Exception has occured when getting statistics by ip address {ipAddress}", exception);
         }
     }
 }

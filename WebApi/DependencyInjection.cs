@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -11,7 +12,8 @@ namespace WebApi;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApiKeyAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApiKeyAuthentication(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.Configure<AuthConfiguration>(configuration.GetSection(AuthConfiguration.SectionName));
         return services;
@@ -50,7 +52,7 @@ public static class DependencyInjection
 
         return services;
     }
-    
+
     public static IServiceCollection AddValidation(this IServiceCollection services, Assembly assembly)
     {
         services.AddValidatorsFromAssembly(assembly);
@@ -58,4 +60,7 @@ public static class DependencyInjection
 
         return services;
     }
+
+    public static IServiceCollection AddProblemDetailsHandler(this IServiceCollection services) =>
+        services.AddProblemDetails(setup => { setup.IncludeExceptionDetails = (_, _) => false; });
 }
