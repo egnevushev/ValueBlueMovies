@@ -60,7 +60,7 @@ public class IpAddressExtractorTests
         };
 
     [Fact]
-    public void ExtractIpAddress_WithNoIpAddress_ReturnsDomainException()
+    public void ExtractIpAddress_WithNoIpAddress_ReturnsNull()
     {
         // Arrange
         var context = new DefaultHttpContext();
