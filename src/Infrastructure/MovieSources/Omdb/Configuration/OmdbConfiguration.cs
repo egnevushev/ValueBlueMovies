@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Infrastructure.MovieSources.Omdb.Configuration;
 
 public class OmdbConfiguration

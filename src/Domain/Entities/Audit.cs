@@ -1,4 +1,4 @@
-using System.Net;
+using Domain.ValueObjects;
 
 namespace Domain.Entities;
 
@@ -15,9 +15,9 @@ public sealed record Audit(
         string imdbId,
         DateTime requested,
         DateTime processed,
-        IPAddress ipAddress)
+        Ip ipAddress)
     {
         var processingTimeMs = (int)(processed - requested).TotalMilliseconds;
-        return new Audit(searchToken, imdbId, processingTimeMs, requested, ipAddress.ToString());
+        return new Audit(searchToken, imdbId, processingTimeMs, requested, ipAddress.Value);
     }
 }

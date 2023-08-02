@@ -20,7 +20,8 @@ public class MoviesController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<IActionResult> GetMovie([FromQuery] string title, CancellationToken cancellationToken)
     {
-        var request = new MovieRequest(title, HttpContext.ExtractIpAddress(), DateTime.Now);
+        var ip = Ip.Create(HttpContext.ExtractIpAddress());
+        var request = new MovieRequest(title, ip, DateTime.Now);
         var movie = await _moviesService.FindMovie(request, cancellationToken);
         
         return movie is null 

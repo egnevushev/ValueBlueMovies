@@ -66,6 +66,6 @@ public class IpAddressExtractorTests
         var context = new DefaultHttpContext();
 
         // Act & Assert
-        Assert.Throws<DomainException>(() => context.ExtractIpAddress());
+        Assert.Null(context.ExtractIpAddress());
     }
 }
