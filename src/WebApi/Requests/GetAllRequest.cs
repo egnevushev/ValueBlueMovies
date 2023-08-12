@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace WebApi.Requests;
 
 public sealed class GetAllRequest

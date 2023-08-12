@@ -1,7 +1,6 @@
 using Application.Admin;
 using Application.Audit;
 using Application.Movies;
-using Domain.Audit;
 using Domain.MovieSearchProviders;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -9,7 +9,7 @@ public interface IAdminService
     
     Task<IReadOnlyCollection<Domain.Entities.Audit>> GetAll(int count, string? lastId, CancellationToken token);
     
-    Task Remove(string id, CancellationToken cancellationToken);
+    Task Remove(string id, CancellationToken token);
     
     Task<IReadOnlyCollection<Domain.Entities.Audit>> DatePeriod(DateTime start, DateTime? end, int count, string? lastId, CancellationToken token);
 

@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Requests;
 
@@ -8,7 +9,9 @@ public sealed class DatePeriodRequest
 
     public string? LastId { get; set; }
     
+    [FromRoute]
     public DateTime Start { get; set; }
     
+    [FromRoute]
     public DateTime? End { get; set; }
 }

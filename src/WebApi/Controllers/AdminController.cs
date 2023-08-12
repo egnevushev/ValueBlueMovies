@@ -10,14 +10,14 @@ using WebApi.Requests;
 namespace WebApi.Controllers;
 
 [ApiKeyAuthFilter]
-[ApiController, Route("api/[controller]")]
+[ApiController, Route("api/audit")]
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
 
     public AdminController(IAdminService adminService) => _adminService = adminService;
 
-    [HttpGet("audit")]
+    [HttpGet("{Id}")]
     [ProducesResponseType(typeof(Audit), 200)]
     [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
     [ProducesResponseType(401)]
@@ -30,7 +30,7 @@ public class AdminController : ControllerBase
             : new JsonResult(audit);
     }
     
-    [HttpGet("audit/all")]
+    [HttpGet("all")]
     [ProducesResponseType(typeof(Audit[]), 200)]
     [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
     [ProducesResponseType(401)]
@@ -41,7 +41,7 @@ public class AdminController : ControllerBase
         return new JsonResult(audits);
     }
     
-    [HttpGet("audit/period")]
+    [HttpGet("period/{start}/{end?}")]
     [ProducesResponseType(typeof(Audit[]), 200)]
     [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
     [ProducesResponseType(401)]
@@ -53,7 +53,7 @@ public class AdminController : ControllerBase
         return new JsonResult(audits);
     }
     
-    [HttpGet("audit/stat/daily")]
+    [HttpGet("stat/daily/{start}/{end?}")]
     [ProducesResponseType(typeof(AuditStatPerDay[]), 200)]
     [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
     [ProducesResponseType(401)]
@@ -64,7 +64,7 @@ public class AdminController : ControllerBase
         return new JsonResult(audits);
     }
     
-    [HttpGet("audit/stat/ip")]
+    [HttpGet("stat/ip/{ip}")]
     [ProducesResponseType(typeof(IpAddressStat), 200)]
     [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
     [ProducesResponseType(401)]
@@ -75,14 +75,14 @@ public class AdminController : ControllerBase
         return new JsonResult(audits);
     }
     
-    [HttpDelete("audit")]
+    [HttpDelete("{id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
     [ProducesResponseType(401)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> Remove([FromQuery] string id, CancellationToken token)
+    public async Task<IActionResult> Remove([FromQuery] RemoveByIdRequest request, CancellationToken token)
     {
-        await _adminService.Remove(id, token);
+        await _adminService.Remove(request.Id, token);
         return Ok();
     }
 }

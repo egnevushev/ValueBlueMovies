@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Movies;
@@ -18,16 +19,14 @@ public class MoviesController : ControllerBase
     [HttpGet("movie")]
     [ProducesResponseType(typeof(Movie), 200)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> GetMovie([FromQuery] string title, CancellationToken cancellationToken)
+    public async Task<IActionResult> SearchMovie([FromQuery] string title, CancellationToken cancellationToken)
     {
-        var ip = Ip.Create(HttpContext.ExtractIpAddress());
-        var request = new MovieRequest(title, ip, DateTime.Now);
-        var movie = await _moviesService.FindMovie(request, cancellationToken);
+        var ip = HttpContext.ExtractIpAddress();
+        var request = new SearchRequest(title, ip, DateTime.Now);
+        var movie = await _moviesService.SearchMovie(request, cancellationToken);
         
         return movie is null 
             ? new NotFoundResult()
-            : new JsonResult(movie);
             : new JsonResult(movie, new JsonSerializerOptions { PropertyNamingPolicy = null });
     }
-
 }

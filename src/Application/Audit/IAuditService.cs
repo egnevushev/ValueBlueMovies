@@ -1,8 +1,8 @@
 using Domain.ValueObjects;
 
-namespace Domain.Audit;
+namespace Application.Audit;
 
 public interface IAuditService
 {
-    void AuditRequest(RequestMeta requestMeta, CancellationToken cancellationToken);
+    void AuditRequest(RequestMeta requestMeta, CancellationToken token);
 }

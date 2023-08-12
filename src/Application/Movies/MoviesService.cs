@@ -1,4 +1,4 @@
-using Domain.Audit;
+using Application.Audit;
 using Domain.Exceptions;
 using Domain.MovieSearchProviders;
 using Domain.ValueObjects;
@@ -19,20 +19,20 @@ public class MoviesService : IMoviesService
         _movieSearchProvider = movieSearchProvider;
     }
 
-    public async Task<Movie?> FindMovie(MovieRequest movieRequest, CancellationToken cancellationToken)
+    public async Task<Movie?> SearchMovie(SearchRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var movie = await _movieSearchProvider.FindMovie(movieRequest.Title);
+            var movie = await _movieSearchProvider.SearchMovie(request.Title);
             if (movie is null)
                 return null;
 
             RequestMeta requestMeta = new(
-                movieRequest.Title,
+                request.Title,
                 movie.ImdbId,
-                movieRequest.Requested,
+                request.Requested,
                 DateTime.Now,
-                movieRequest.IpAddress);
+                Ip.Create(request.IpAddress));
 
             _auditService.AuditRequest(requestMeta, cancellationToken);
 
@@ -40,12 +40,12 @@ public class MoviesService : IMoviesService
         }
         catch (DomainException)
         {
-            _logger.LogError("Exception has occured when processing {@Request}", movieRequest);
+            _logger.LogError("Exception has occured when processing {@Request}", request);
             throw;
         }
         catch (Exception exception)
         {
-            _logger.LogError("Exception has occured when processing request {@Request}", movieRequest);
+            _logger.LogError("Exception has occured when processing request {@Request}", request);
             throw new DomainException("Exception has occured when processing request", exception);
         }
     }

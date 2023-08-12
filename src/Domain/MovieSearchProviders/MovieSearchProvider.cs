@@ -3,7 +3,7 @@ using Domain.ValueObjects;
 
 namespace Domain.MovieSearchProviders;
 
-public class MovieSearchProvider : IMovieSearchProvider
+public sealed class MovieSearchProvider : IMovieSearchProvider
 {
     private readonly IEnumerable<IMovieSource> _movieSources;
 
@@ -12,7 +12,7 @@ public class MovieSearchProvider : IMovieSearchProvider
         _movieSources = movieSources;
     }
 
-    public async Task<Movie?> FindMovie(string title)
+    public async Task<Movie?> SearchMovie(string title)
     {
         foreach (var source in _movieSources)
         {

@@ -1,5 +1,4 @@
 using System.Net;
-using Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using WebApi.Extractors;
 

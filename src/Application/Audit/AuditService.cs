@@ -1,4 +1,3 @@
-using Domain.Audit;
 using Domain.Repositories;
 using Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +14,7 @@ public class AuditService : IAuditService
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public void AuditRequest(RequestMeta requestMeta, CancellationToken cancellationToken)
+    public void AuditRequest(RequestMeta requestMeta, CancellationToken token)
     {
         //todo: should split responsibility of FireAndForget and Auditing
         
@@ -36,13 +35,13 @@ public class AuditService : IAuditService
                     requestMeta.Processed,
                     requestMeta.IpAddress);
         
-                await repository.SaveAudit(audit, cancellationToken);
+                await repository.SaveAudit(audit, token);
             }
             catch (Exception e)
             {
                 //alert
                 logger?.LogError(e, "Error has occured while auditing request: {@Request}", requestMeta);
             }
-        });
+        }, token);
     }
 }

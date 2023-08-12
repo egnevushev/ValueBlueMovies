@@ -7,30 +7,32 @@ using Serilog;
 using WebApi;
 
 var builder = WebApplication.CreateBuilder(args);
-var assembly = typeof(Program).Assembly;
+{
+    var assembly = typeof(Program).Assembly;
 
-//register serilog
-builder.Host.UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration));
+    //register serilog
+    builder.Host.UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration));
 
-builder.Services
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration)
-    .AddApiKeyAuthentication(builder.Configuration)
-    .AddSwagger()
-    .AddValidation(assembly)
-    .AddProblemDetailsHandler();
-
-builder.Services.AddControllers();
+    builder.Services
+        .AddApplication()
+        .AddInfrastructure(builder.Configuration)
+        .AddApiKeyAuthentication(builder.Configuration)
+        .AddSwagger()
+        .AddValidation(assembly)
+        .AddProblemDetailsHandler()
+        .AddControllers();
+}
 
 var app = builder.Build();
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+    app.UseProblemDetails();
+    app.UseSerilogRequestLogging();
+    app.UseAuthorization();
 
-app.UseProblemDetails();
-app.UseSerilogRequestLogging();
-app.UseAuthorization();
+    app.MapControllers();
 
-app.MapControllers();
-
-app.Run();
+    app.Run();
+}

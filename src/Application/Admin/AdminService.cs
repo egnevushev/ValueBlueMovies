@@ -52,11 +52,11 @@ public class AdminService : IAdminService
         }
     }
 
-    public async Task Remove(string id, CancellationToken cancellationToken)
+    public async Task Remove(string id, CancellationToken token)
     {
         try
         {
-            await _auditRepository.Remove(id, cancellationToken);
+            await _auditRepository.Remove(id, token);
         }
         catch (DomainException)
         {
