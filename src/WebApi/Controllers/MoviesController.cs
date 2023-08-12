@@ -27,6 +27,7 @@ public class MoviesController : ControllerBase
         return movie is null 
             ? new NotFoundResult()
             : new JsonResult(movie);
+            : new JsonResult(movie, new JsonSerializerOptions { PropertyNamingPolicy = null });
     }
 
 }
